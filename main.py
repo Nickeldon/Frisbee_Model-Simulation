@@ -3,6 +3,30 @@ import matplotlib.pyplot as plt
 import numpy as np
 plt.style.use('ggplot')
 
+def getCD(theta):
+  return 0.085 + 3.30 * (theta - (-0.052))**2
+
+def getCL(theta):
+  return 0.13 + (3.09 * theta)
+
+class AerodynamicForces:
+    def __init__(self, v_x, v_y, theta):
+        self.v_x = v_x
+        self.v_y = v_y
+        self.theta = theta
+        self.CD = getCD(theta)
+        self.CL = getCL(theta)
+    
+    def lift(self):
+        return {
+            'y': 0.5 * self.CL * p * A * self.theta * (self.v_y**2),
+            'x': 0.5 * self.CL * p * A * self.theta * (self.v_x**2)}
+
+    def drag(self):
+        return {
+            'y': 0.5 * self.CD * p * A * self.theta * (self.v_y**2),
+            'x': 0.5 * self.CD * p * A * self.theta * (self.v_x**2)}
+
 # Constants
 CD = 0.5
 p = 1.225
@@ -14,9 +38,6 @@ T_MAX = 5.0 # Max time of the simulation
 STEPS = int(T_MAX/DT) # Number of steps in the simulation
 
 # Function calculating the trajectory of a launched projectile
-
-
-
 # Initial Conditions
 x_0 = 0 # Initial position in x in meters
 y_0 = 10 # Initial position in y in meters
@@ -25,35 +46,19 @@ v_0 = 20 # Initial speed in m/s
 # Create a set of launching angles to try out.
 theta_0 = range(20,60,5) # Launch angle in degrees
 
-def drag(CD, p, A, v_x, v_y):
+"""def drag(CD, p, A, v_x, v_y):
   v = ((v_x**2) + (v_y**2))**(0.5)
   return ((0.5) * (CD * p * A * v * v_y)), ((0.5) * (CD * p * A * v * v_x))
 
 def a_nodrag_y(CD, p, A, v_x, v_y, m):
-  return (-drag(CD, p, A, v_x, v_y)[0] / m)
+  return (-drag(CD, p, A, v_x, v_y)[0] / m)"""
 
-class motionEquations:
-    def __init__(self, CD, p, A, m, g):
-        self.CD = CD
-        self.p = p
-        self.A = A
-        self.m = m
-        self.g = g
-    
-    def drag(self, v_x, v_y):
-        v = ((v_x**2) + (v_y**2))**(0.5)
-        return ((0.5) * (self.CD * self.p * self.A * v * v_y)), ((0.5) * (self.CD * self.p * self.A * v * v_x))
+def getAcc(v_x, v_y, m, theta):
+  AEFORCES = AerodynamicForces(v_x, v_y, theta)
+  Ay = (1 / m) * (-m*g + AEFORCES.lift['y'] - AEFORCES.drag['y'])
+  Ax = (1 / m) * (-AEFORCES.lift['x'] - AEFORCES.drag['x'])
+  return [Ax,  Ay]
 
-    def a_nodrag_y(self, v_x, v_y):
-        return (-self.drag(v_x, v_y)[0] / self.m)
-    
-    def newton_2nd_law(self, v_x, v_y):
-        return self.drag(v_x, v_y)[1] / self.m
-
-"""
-# VX AND AX NEVER CHANGE
-def a_nodrag_x(CD, p, A, v_x, v_y, m):
-  return (-drag(CD, p, A, v_x, v_y)[1] / m)"""
 
 def GetFrisbeeTraj(x_0,y_0,v_0, theta_0):
 
