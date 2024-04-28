@@ -1,19 +1,22 @@
 import math
 import matplotlib.pyplot as plt
-import numpy as np
-plt.style.use('ggplot')
 
-def getCD(theta):
-  return 0.085 + 3.30 * (theta - (-0.052))**2
+plt.style.use('dark_background')
 
-def getCL(theta):
-  return 0.13 + (3.09 * theta)
+
+def getCD(alpha):
+  return 0.085 + 3.30 * (math.radians(alpha) - (-0.052))**2
+
+def getCL(alpha):
+  return 0.13 + (3.09 * math.radians(alpha))
 
 class AerodynamicForces:
-    def __init__(self, v_x, v_y, theta):
+    def __init__(self, v_x, v_y, theta, beta):
         self.theta = theta
-        self.CD = getCD(self.theta)
-        self.CL = getCL(self.theta)
+        self.beta = beta
+        self.alpha = self.theta - self.beta
+        self.CD = getCD(self.alpha)
+        self.CL = getCL(self.alpha)
         self.v_x = v_x
         self.v_y = v_y
         self.v = math.sqrt(self.v_x**2 + self.v_y**2)
@@ -21,14 +24,14 @@ class AerodynamicForces:
     def lift(self):
       print(self.CL, self.CD)
       return {
-          'y': 0.5 * self.CL * rho * A * math.cos(math.radians(self.theta)) * (self.v**2),
-          'x': 0.5 * self.CL * rho * A * math.sin(math.radians(self.theta)) * (self.v**2)}
+          'y': 0.5 * self.CL * rho * A * math.cos(math.radians(self.alpha)) * (self.v**2),
+          'x': 0.5 * self.CL * rho * A * math.sin(math.radians(self.alpha)) * (self.v**2)}
 
     def drag(self):
       print(self.CL, self.CD)
       return {
-          'y': 0.5 * self.CD * rho * A * math.sin(math.radians(self.theta)) * (self.v**2),
-          'x': 0.5 * self.CD * rho * A * math.cos(math.radians(self.theta)) * (self.v**2)}
+          'y': 0.5 * self.CD * rho * A * math.sin(math.radians(self.alpha)) * (self.v**2),
+          'x': 0.5 * self.CD * rho * A * math.cos(math.radians(self.alpha)) * (self.v**2)}
 
 # Constants
 g = 9.81  # Acceleration due to gravity in m/s^2
@@ -46,9 +49,10 @@ v_0 = 12.0            # initial speed in m/s
 
 # Create a set of launching angles to try out.
 theta_0 = range(0,20,5) # Launch angle in degrees
+beta = 3
 
-def getAcc(v_x, v_y, m, theta):
-  AEFORCES = AerodynamicForces(v_x, v_y, theta)
+def getAcc(v_x, v_y, m, theta, beta):
+  AEFORCES = AerodynamicForces(v_x, v_y, theta, beta)
   Ay = (1 / m) * (-m*g + AEFORCES.lift()['y'] - AEFORCES.drag()['y'])
   Ax = (1 / m) * (AEFORCES.lift()['x'] - AEFORCES.drag()['x'])
   return [Ax,  Ay]
@@ -64,7 +68,7 @@ def GetFrisbeeTraj(x_0,y_0,v_0, theta_0):
 
   for i in range(STEPS):
     #print(vx[i], vy[i])
-    Accelerations = getAcc(vx[i], vy[i], m, theta_0)
+    Accelerations = getAcc(vx[i], vy[i], m, theta_0, beta)
     
     ay = Accelerations[1]
     ax = Accelerations[0]
@@ -88,7 +92,6 @@ def GetFrisbeeTraj(x_0,y_0,v_0, theta_0):
 # For loop on the launching angle
 
 prevHigh = [0, 0]
-
 
 print(theta_0)
 # Calculate the trajectory for each launching angle and add to plot
