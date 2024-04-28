@@ -68,6 +68,8 @@ def GetFrisbeeTraj(x_0,y_0,v_0, theta_0):
     ax = Accelerations[0]
     
     vy += DT* ay
+    
+    vx += DT* ax
 
     #Calculating position in x
     x.append(x[i] + DT* vx)
