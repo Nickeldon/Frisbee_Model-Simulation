@@ -46,17 +46,10 @@ v_0 = 20 # Initial speed in m/s
 # Create a set of launching angles to try out.
 theta_0 = range(20,60,5) # Launch angle in degrees
 
-"""def drag(CD, p, A, v_x, v_y):
-  v = ((v_x**2) + (v_y**2))**(0.5)
-  return ((0.5) * (CD * p * A * v * v_y)), ((0.5) * (CD * p * A * v * v_x))
-
-def a_nodrag_y(CD, p, A, v_x, v_y, m):
-  return (-drag(CD, p, A, v_x, v_y)[0] / m)"""
-
 def getAcc(v_x, v_y, m, theta):
   AEFORCES = AerodynamicForces(v_x, v_y, theta)
-  Ay = (1 / m) * (-m*g + AEFORCES.lift['y'] - AEFORCES.drag['y'])
-  Ax = (1 / m) * (-AEFORCES.lift['x'] - AEFORCES.drag['x'])
+  Ay = (1 / m) * (-m*g + AEFORCES.lift()['y'] - AEFORCES.drag()['y'])
+  Ax = (1 / m) * (-AEFORCES.lift()['x'] - AEFORCES.drag()['x'])
   return [Ax,  Ay]
 
 
