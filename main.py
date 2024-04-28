@@ -14,7 +14,7 @@ class AerodynamicForces:
     def __init__(self, v_x, v_y, theta, beta):
         self.theta = theta
         self.beta = beta
-        self.alpha = self.theta - self.beta
+        self.alpha = self.beta + (self.theta)
         self.CD = getCD(self.alpha)
         self.CL = getCL(self.alpha)
         self.v_x = v_x
@@ -22,16 +22,14 @@ class AerodynamicForces:
         self.v = math.sqrt(self.v_x**2 + self.v_y**2)
     
     def lift(self):
-      print(self.CL, self.CD)
       return {
-          'y': 0.5 * self.CL * rho * A * math.cos(math.radians(self.alpha)) * (self.v**2),
-          'x': 0.5 * self.CL * rho * A * math.sin(math.radians(self.alpha)) * (self.v**2)}
+          'y': 0.5 * self.CL * rho * A * math.cos(math.radians(self.theta)) * (self.v**2),
+          'x': 0.5 * self.CL * rho * A * math.sin(math.radians(self.theta)) * (self.v**2)}
 
     def drag(self):
-      print(self.CL, self.CD)
       return {
-          'y': 0.5 * self.CD * rho * A * math.sin(math.radians(self.alpha)) * (self.v**2),
-          'x': 0.5 * self.CD * rho * A * math.cos(math.radians(self.alpha)) * (self.v**2)}
+          'y': 0.5 * self.CD * rho * A * math.sin(math.radians(self.theta)) * (self.v**2),
+          'x': 0.5 * self.CD * rho * A * math.cos(math.radians(self.theta)) * (self.v**2)}
 
 # Constants
 g = 9.81  # Acceleration due to gravity in m/s^2
@@ -48,8 +46,8 @@ v_0 = 12.0            # initial speed in m/s
 
 
 # Create a set of launching angles to try out.
-theta_0 = range(0,20,5) # Launch angle in degrees
-beta = 3
+theta_0 = range(0, 20, 5) # Launch angle in degrees
+beta = 20
 
 def getAcc(v_x, v_y, m, theta, beta):
   AEFORCES = AerodynamicForces(v_x, v_y, theta, beta)
@@ -67,7 +65,7 @@ def GetFrisbeeTraj(x_0,y_0,v_0, theta_0):
   vy = [v_0 * math.sin(math.radians(theta_0))]
 
   for i in range(STEPS):
-    #print(vx[i], vy[i])
+    print(vx[i], vy[i])
     Accelerations = getAcc(vx[i], vy[i], m, theta_0, beta)
     
     ay = Accelerations[1]
