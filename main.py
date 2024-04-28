@@ -69,7 +69,10 @@ def GetFrisbeeTraj(x_0,y_0,v_0, theta_0):
   vy = v_0 * math.sin(math.radians(theta_0))
 
   for i in range(STEPS):
-    ay = a_nodrag_y(CD, p, A, vx, vy, m)
+    Accelerations = getAcc(vx, vy, m, theta_0)
+    
+    ay = Accelerations[1]
+    ax = Accelerations[0]
     
     vy += DT* ay
 
