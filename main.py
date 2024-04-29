@@ -52,7 +52,7 @@ theta_0 = range(0, 20, 5) # Launch angle in degrees
 
 def getAcc(v_x, v_y, m, beta):
 	theta = math.atan(v_y/v_x)
-	print(theta*180/math.pi)
+	#print(theta*180/math.pi)
 	AEFORCES = AerodynamicForces(v_x, v_y, theta, beta)
 	Ay = (1 / m) * (-m*g + AEFORCES.lift(v_x, v_y)['y']*math.cos(theta) - AEFORCES.drag(v_x, v_y)['y']*math.sin(theta))
 	Ax = (1 / m) * (AEFORCES.lift(v_x, v_y)['x']*math.sin(theta) - AEFORCES.drag(v_x, v_y)['x']*math.cos(theta))
@@ -93,6 +93,8 @@ def GetFrisbeeTraj(x_0,y_0,v_0, theta_0, beta):
 prevHigh = [0, 0]
 
 # Calculate the trajectory for each launching angle and add to plot
+plt.rcParams['figure.figsize'] = (10, 4)
+
 for angle in theta_0:
   x,y = GetFrisbeeTraj(x_0,y_0,v_0,angle, 10)
   if(x[len(x) - 1] > prevHigh[1]):
