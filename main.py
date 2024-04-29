@@ -1,6 +1,12 @@
 import math
 import matplotlib.pyplot as plt
+import numpy as np
 
+"""try:
+    import scipy
+except ImportError:
+    print("Please install SciPy to adjust the scale of the plot.")
+"""
 
 def getCD(alpha):
   return 0.085 + 3.30 * (math.radians(alpha) - (-0.052))**2
@@ -95,7 +101,12 @@ def GetFrisbeeTraj(x_0,y_0,v_0, theta_0, beta):
 prevHigh = [0, 0]
 
 # Calculate the trajectory for each launching angle and add to plot
-plt.rcParams['figure.figsize'] = (10, 4)
+plt.rcParams['figure.figsize'] = (1	, 4)
+plt.figure(figsize=(13, 4))
+plt.yticks(np.arange(0, 4, 1))
+plt.xticks(np.arange(-1, 22, 2.5))
+plt.xlim(-1, 22)
+plt.ylim(0, 4)
 
 for index, angle in enumerate(theta_0):
   x,y = GetFrisbeeTraj(x_0,y_0,v_0,angle, beta_0[index])
