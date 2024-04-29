@@ -113,7 +113,7 @@ for index, angle in enumerate(theta_0):
   if(x[len(x) - 1] > prevHigh[1]):
     prevHigh[0] = angle
     prevHigh[1] = x[len(x) - 1]
-  plt.plot(x,y,label = f"{angle}\N{DEGREE SIGN} - Range={x[-1]:.1f}m")
+  plt.plot(x,y,label = f"({angle}\N{DEGREE SIGN}, {beta_0[index]}\N{DEGREE SIGN})  - Range={x[-1]:.1f}m")
 plt.legend()
 plt.title("Effect of (\u03B8\u2080, \u03B2) on trajectory of a Frisbee for an initial speed of 12 m/s")
 plt.xlabel("Distance (m)")
