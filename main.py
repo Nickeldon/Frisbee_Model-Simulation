@@ -102,7 +102,7 @@ for angle in theta_0:
     prevHigh[1] = x[len(x) - 1]
   plt.plot(x,y,label = f"{angle}\N{DEGREE SIGN} - Range={x[-1]:.1f}m")
 plt.legend()
-plt.title("Effect of (theta0, B) on trajectory of a Frisbee for an initial speed of 12 m/s")
+plt.title("Effect of (\u03B8\u2080, \u03B2) on trajectory of a Frisbee for an initial speed of 12 m/s")
 plt.xlabel("Distance (m)")
 plt.ylabel("Height (m)")
 plt.show()
