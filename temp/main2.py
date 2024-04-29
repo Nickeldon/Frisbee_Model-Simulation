@@ -9,29 +9,29 @@ def getCL(alpha):
   return 0.13 + (3.09 * math.radians(alpha))
 
 class AerodynamicForces:
-	def __init__(self, v_x, v_y, theta, beta):
-		self.theta = theta
-		self.beta = beta
-		self.alpha = self.beta - self.theta*(180/math.pi)
-		self.CD = getCD(self.alpha)
-		self.CL = getCL(self.alpha)
-		self.v_x = v_x
-		self.v_y = v_y
-		self.v = math.sqrt(self.v_x**2 + self.v_y**2)
-		
-	def lift(self, v_x, v_y):
-		self.v_x = v_x
-		self.v_y = v_y
-		return {
-		'y': 0.5 * self.CL * rho * A * (self.v)**2,
-		'x': 0.5 * self.CL * rho * A * (self.v)**2}
+    def __init__(self, v_x, v_y, theta, beta):
+        self.theta = theta
+        self.beta = beta
+        self.alpha = self.beta - self.theta*(180/math.pi)
+        self.CD = getCD(self.alpha)
+        self.CL = getCL(self.alpha)
+        self.v_x = v_x
+        self.v_y = v_y
+        self.v = math.sqrt(self.v_x**2 + self.v_y**2)
+        
+    def lift(self, v_x, v_y):
+        self.v_x = v_x
+        self.v_y = v_y
+        return {
+        'y': 0.5 * self.CL * rho * A * (self.v)**2 * math.sin(math.radians(self.alpha)),
+        'x': 0.5 * self.CL * rho * A * (self.v)**2 * math.cos(math.radians(self.alpha))}
 
-	def drag(self, v_x, v_y):
-		self.v_x = v_x
-		self.v_y = v_y
-		return {
-		'y': 0.5 * self.CD * rho * A * (self.v)**2,
-		'x': 0.5 * self.CD * rho * A * (self.v)**2}
+    def drag(self, v_x, v_y):
+        self.v_x = v_x
+        self.v_y = v_y
+        return {
+        'y': 0.5 * self.CD * rho * A * (self.v)**2 * math.sin(math.radians(self.alpha)),
+        'x': 0.5 * self.CD * rho * A * (self.v)**2 * math.cos(math.radians(self.alpha))}
 
 # Constants
 g = 9.81  # Acceleration due to gravity in m/s^2
