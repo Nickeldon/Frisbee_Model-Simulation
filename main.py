@@ -55,7 +55,7 @@ def getAcc(v_x, v_y, m, beta):
 	print(theta*180/math.pi)
 	AEFORCES = AerodynamicForces(v_x, v_y, theta, beta)
 	Ay = (1 / m) * (-m*g + AEFORCES.lift(v_x, v_y)['y']*math.cos(theta) - AEFORCES.drag(v_x, v_y)['y']*math.sin(theta))
-	Ax = (1 / m) * (AEFORCES.lift(v_x, v_y)['x']*math.sin(theta) - AEFORCES.drag(v_x, v_y)['x']*math.cos(theta))
+	Ax = (1 / m) * (-AEFORCES.lift(v_x, v_y)['x']*math.sin(theta) - AEFORCES.drag(v_x, v_y)['x']*math.cos(theta))
 	return [Ax,  Ay]
 
 
