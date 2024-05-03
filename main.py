@@ -2,6 +2,10 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
+from 'optimizer.py' import Optimizer
+
+Optimizer()
+
 """try:
     import scipy
 except ImportError:
