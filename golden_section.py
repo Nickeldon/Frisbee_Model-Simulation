@@ -70,7 +70,7 @@ print(f"Lagrange point L1 is located at {r_max_L1:.8g} m with {V_max_L1} N")
 r_max_L2, V_max_L2 = golden_section(VL1, -r1, -r2, ACCURACY=1e-8)
 print(f"Lagrange point L2 is located at {r_max_L2:.8g} m")
 
-
+"""
 # Plot it
 r_array = np.linspace(-r2, r2, 300)
 f_array = [VL1(x) for x in r_array]
@@ -84,4 +84,4 @@ plt.text(r_max_L1, V_max_L1, f"L1, {r_max_L1:.3g} m")
 plt.text(r_max_L2, V_max_L2, f"L2, {r_max_L2:.4g} m")
 plt.annotate("The L2 is situated 1.51e+9 m from Earth\naway from the sun",(-5e+09, -1.355e+09), color = "black", size = "12")
 # plt.ylim(-1.34e9,-1.33e9)
-plt.show()
+plt.show()"""
