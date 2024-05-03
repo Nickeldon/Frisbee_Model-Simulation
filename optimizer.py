@@ -1,3 +1,4 @@
+from "./golden_section.py" import golden_section
 
 max_beta, min_beta = [0, 90]
 
