@@ -1,5 +1,7 @@
 from golden_section import golden_section
 
+"Video about Downhill simplex method: https://www.youtube.com/watch?v=N_8MyFjGc4A"
+
 max_beta, min_beta = [0, 90]
 
 max_theta, min_theta = [0, 90]
