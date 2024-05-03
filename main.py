@@ -2,9 +2,9 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-from 'optimizer.py' import Optimizer
+from optimizer import Optimizer
 
-Optimizer()
+Optimizer([0, 0], [0, 0], 10)
 
 """try:
     import scipy

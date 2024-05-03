@@ -1,4 +1,4 @@
-from "./golden_section.py" import golden_section
+from golden_section import golden_section
 
 max_beta, min_beta = [0, 90]
 
