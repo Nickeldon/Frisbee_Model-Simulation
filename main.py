@@ -29,16 +29,12 @@ class AerodynamicForces:
 		self.v_y = v_y
 		self.v = math.sqrt(self.v_x**2 + self.v_y**2)
 		
-	def lift(self, v_x, v_y):
-		self.v_x = v_x
-		self.v_y = v_y
+	def lift(self):
 		return {
 		'y': 0.5 * self.CL * rho * A * (self.v)**2,
 		'x': 0.5 * self.CL * rho * A * (self.v)**2}
 
-	def drag(self, v_x, v_y):
-		self.v_x = v_x
-		self.v_y = v_y
+	def drag(self):
 		return {
 		'y': 0.5 * self.CD * rho * A * (self.v)**2,
 		'x': 0.5 * self.CD * rho * A * (self.v)**2}
@@ -66,8 +62,8 @@ def getAcc(v_x, v_y, m, beta):
 	theta = math.atan(v_y/v_x)
 	#print(theta*180/math.pi)
 	AEFORCES = AerodynamicForces(v_x, v_y, theta, beta)
-	Ay = (1 / m) * (-m*g + AEFORCES.lift(v_x, v_y)['y']*math.cos(theta) - AEFORCES.drag(v_x, v_y)['y']*math.sin(theta))
-	Ax = (1 / m) * (-AEFORCES.lift(v_x, v_y)['x']*math.sin(theta) - AEFORCES.drag(v_x, v_y)['x']*math.cos(theta))
+	Ay = (1 / m) * (-m*g + AEFORCES.lift()['y']*math.cos(theta) - AEFORCES.drag()['y']*math.sin(theta))
+	Ax = (1 / m) * (-AEFORCES.lift()['x']*math.sin(theta) - AEFORCES.drag()['x']*math.cos(theta))
 	return [Ax,  Ay]
 
 
