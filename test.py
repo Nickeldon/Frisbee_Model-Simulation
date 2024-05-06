@@ -14,6 +14,8 @@ def run_test():
     y_0 = 1.0             # initial vertical position in m
     v_0 = 22.0            # initial speed in m/s
     
+    theta_0 = [2]
+    beta_0 = [11]
     # For loop on the launching angle
 
     prevHigh = [0, 0]
