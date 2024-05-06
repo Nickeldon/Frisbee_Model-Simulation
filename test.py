@@ -23,10 +23,10 @@ def run_test():
     # Calculate the trajectory for each launching angle and add to plot
     plt.rcParams['figure.figsize'] = (1	, 4)
     plt.figure(figsize=(13, 4))
-    plt.yticks(np.arange(0, 4, 1))
-    plt.xticks(np.arange(-1, 22, 2.5))
-    plt.xlim(-1, 22)
-    plt.ylim(0, 4)
+    plt.yticks(np.arange(0, 6, 1))
+    plt.xticks(np.arange(-1, 533, 2.5))
+    plt.xlim(-1, 53)
+    plt.ylim(0, 6)
 
     for index, angle in enumerate(theta_0):
         x,y = GetFrisbeeTraj(x_0,y_0,v_0,angle, beta_0[index], m, A, rho, STEPS)
@@ -40,3 +40,5 @@ def run_test():
     plt.ylabel("Height (m)")
     plt.show()
     print(f'The highest range in the x axis is equal to {prevHigh[1]:.1f}m with an angle of {prevHigh[0]}°')
+
+run_test()
