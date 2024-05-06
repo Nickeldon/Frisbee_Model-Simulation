@@ -32,6 +32,7 @@ pip install scipy
     ```
 
 ## Example
+### Based on the experimentation processed in [this article by Erynn J. Schroeder](https://digitalcommons.csbsju.edu/cgi/viewcontent.cgi?article=1067&context=honors_theses)
 ```python
 # test.py
 
@@ -40,22 +41,22 @@ from main import *
 def run_test():
     # Constants
     g = 9.8  # Acceleration due to gravity in m/s^2
-    DT = 0.01   # Time step
-    T_MAX = 12.3 # Max time of the simulation
+    DT = 0.01             # Time step
+    T_MAX = 12.3          # Max time of the simulation
     STEPS = int(T_MAX/DT) # Number of steps in the simulation
-    rho = 1.2041            # air density in kg/m^3
-    r = 0.27305/2
-    A = math.pi * r**2
-    m = 0.2455          # mass in kg
+    rho = 1.2041          # air density in kg/m^3
+    r = 0.27305/2         # Radius of cross section of frisbee
+    A = math.pi * r**2    # Cross section area of Frisbee
+    m = 0.2455            # mass in kg
     x_0 = 0               # initial horizontal position in m
     y_0 = 1.0             # initial vertical position in m
     v_0 = 22.0            # initial speed in m/s
     
-    theta_0 = [2]
-    beta_0 = [11]
+    theta_0 = [2]         # Initial throwing angle
+    beta_0 = [11]         # Initial angle of attack
     # For loop on the launching angle
 
-    prevHigh = [0, 0]
+    prevHigh = [0, 0]     # History array to find maximum range of the frisbee
 
     # Calculate the trajectory for each launching angle and add to plot
     plt.rcParams['figure.figsize'] = (1	, 4)
