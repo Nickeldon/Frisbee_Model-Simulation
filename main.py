@@ -2,10 +2,6 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-from optimizer import Optimizer
-
-Optimizer([0, 0], [0, 0], 10)
-
 """try:
     import scipy
 except ImportError:
@@ -19,35 +15,39 @@ def getCL(alpha):
   return 0.13 + (3.09 * math.radians(alpha))
 
 class AerodynamicForces:
-	def __init__(self, v_x, v_y, theta, beta):
+	def __init__(self, v_x, v_y, theta, beta, rho, A, m):
 		self.theta = theta
 		self.beta = beta
 		self.alpha = self.beta - self.theta*(180/math.pi)
 		self.CD = getCD(self.alpha)
 		self.CL = getCL(self.alpha)
+		self.rho = rho
+		self.A = A
+		self.m = m
 		self.v_x = v_x
 		self.v_y = v_y
 		self.v = math.sqrt(self.v_x**2 + self.v_y**2)
+    
 		
 	def lift(self):
 		return {
-		'y': 0.5 * self.CL * rho * A * (self.v)**2,
-		'x': 0.5 * self.CL * rho * A * (self.v)**2}
+		'y': 0.5 * self.CL * self.rho * self.A * (self.v)**2,
+		'x': 0.5 * self.CL * self.rho * self.A * (self.v)**2}
 
 	def drag(self):
 		return {
-		'y': 0.5 * self.CD * rho * A * (self.v)**2,
-		'x': 0.5 * self.CD * rho * A * (self.v)**2}
+		'y': 0.5 * self.CD * self.rho * self.A * (self.v)**2,
+		'x': 0.5 * self.CD * self.rho * self.A * (self.v)**2}
 
 # Constants
 g = 9.81  # Acceleration due to gravity in m/s^2
 DT = 0.01   # Time step
-T_MAX = 5.0 # Max time of the simulation
+T_MAX = 5 # Max time of the simulation
 STEPS = int(T_MAX/DT) # Number of steps in the simulation
 rho = 1.23            # air density in kg/m^3
 r = 0.135
 A = math.pi * r**2
-m = 0.175             # mass in kg
+m = 0.175          # mass in kg
 x_0 = 0               # initial horizontal position in m
 y_0 = 1.0             # initial vertical position in m
 v_0 = 12.0            # initial speed in m/s
@@ -58,16 +58,16 @@ v_0 = 12.0            # initial speed in m/s
 theta_0 = [0, 0, 15, 15]
 beta_0 = [0, 10, 0, 10]
 
-def getAcc(v_x, v_y, m, beta):
+def getAcc(v_x, v_y, m, beta, rho, A):
 	theta = math.atan(v_y/v_x)
 	#print(theta*180/math.pi)
-	AEFORCES = AerodynamicForces(v_x, v_y, theta, beta)
+	AEFORCES = AerodynamicForces(v_x, v_y, theta, beta, rho, A, m)
 	Ay = (1 / m) * (-m*g + AEFORCES.lift()['y']*math.cos(theta) - AEFORCES.drag()['y']*math.sin(theta))
 	Ax = (1 / m) * (-AEFORCES.lift()['x']*math.sin(theta) - AEFORCES.drag()['x']*math.cos(theta))
 	return [Ax,  Ay]
 
 
-def GetFrisbeeTraj(x_0,y_0,v_0, theta_0, beta):
+def GetFrisbeeTraj(x_0,y_0,v_0, theta_0, beta, m, A, rho, STEPS):
     vx_0 = v_0 * math.cos(math.radians(theta_0))
     vy_0 = v_0 * math.sin(math.radians(theta_0))
 
@@ -76,7 +76,7 @@ def GetFrisbeeTraj(x_0,y_0,v_0, theta_0, beta):
     vx = [vx_0]
     vy = [vy_0]
     
-    acceleration = getAcc(vx[0], vy[0], m, beta)
+    acceleration = getAcc(vx[0], vy[0], m, beta, rho, A)
     
     ax = [acceleration[0]]
     ay = [acceleration[1]]
@@ -88,8 +88,8 @@ def GetFrisbeeTraj(x_0,y_0,v_0, theta_0, beta):
         vx.append(vx[i] + ax[i]*DT)
         vy.append(vy[i] + ay[i]*DT)
         
-        ax.append(getAcc(vx[-1], vy[-1], m, beta)[0])
-        ay.append(getAcc(vx[-1], vy[-1], m, beta)[1])
+        ax.append(getAcc(vx[-1], vy[-1], m, beta, rho, A)[0])
+        ay.append(getAcc(vx[-1], vy[-1], m, beta, rho, A)[1])
 
         if y[-1] <= 0:
             break
@@ -109,7 +109,7 @@ plt.xlim(-1, 22)
 plt.ylim(0, 4)
 
 for index, angle in enumerate(theta_0):
-  x,y = GetFrisbeeTraj(x_0,y_0,v_0,angle, beta_0[index])
+  x,y = GetFrisbeeTraj(x_0,y_0,v_0,angle, beta_0[index], m, A, rho, STEPS)
   if(x[len(x) - 1] > prevHigh[1]):
     prevHigh[0] = angle
     prevHigh[1] = x[len(x) - 1]
