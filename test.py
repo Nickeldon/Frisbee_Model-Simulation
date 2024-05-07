@@ -1,4 +1,4 @@
-from main import *
+from trajectory_compiler import *
 
 def run_test():
     # Constants

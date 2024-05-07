@@ -1,3 +1,3 @@
-from main import execute
+from trajectory_compiler import execute
 
 execute()

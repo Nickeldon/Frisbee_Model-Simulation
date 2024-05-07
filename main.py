@@ -1,123 +1,107 @@
-import math
-import matplotlib.pyplot as plt
+from _3D_visulizer import _3d_plotter
 import numpy as np
+from optimizer import optimize
+from trajectory_compiler import GetFrisbeeTraj
 
-"""try:
-    import scipy
+try:
+    import matplotlib.pyplot as plt
 except ImportError:
-    print("Please install SciPy to adjust the scale of the plot.")
-"""
-
-def getCD(alpha):
-  return 0.085 + 3.30 * (math.radians(alpha) - (-0.052))**2
-
-def getCL(alpha):
-  return 0.13 + (3.09 * math.radians(alpha))
-
-class AerodynamicForces:
-	def __init__(self, v_x, v_y, theta, beta, rho, A, m):
-		self.theta = theta
-		self.beta = beta
-		self.alpha = self.beta - self.theta*(180/math.pi)
-		self.CD = getCD(self.alpha)
-		self.CL = getCL(self.alpha)
-		self.rho = rho
-		self.A = A
-		self.m = m
-		self.v_x = v_x
-		self.v_y = v_y
-		self.v = math.sqrt(self.v_x**2 + self.v_y**2)
+    raise ImportError("The matplotlib module is not installed. \nPlease install it using 'pip install matplotlib'!")
+class Frisbee:
+    def __init__(self) -> None:
+        pass
     
-		
-	def lift(self):
-		return {
-		'y': 0.5 * self.CL * self.rho * self.A * (self.v)**2,
-		'x': 0.5 * self.CL * self.rho * self.A * (self.v)**2}
-
-	def drag(self):
-		return {
-		'y': 0.5 * self.CD * self.rho * self.A * (self.v)**2,
-		'x': 0.5 * self.CD * self.rho * self.A * (self.v)**2}
-
-# Constants
-g = 9.81  # Acceleration due to gravity in m/s^2
-DT = 0.01   # Time step
-T_MAX = 5 # Max time of the simulation
-STEPS = int(T_MAX/DT) # Number of steps in the simulation
-rho = 1.23            # air density in kg/m^3
-r = 0.135
-A = math.pi * r**2
-m = 0.175          # mass in kg
-x_0 = 0               # initial horizontal position in m
-y_0 = 1.0             # initial vertical position in m
-v_0 = 12.0            # initial speed in m/s
-
-
-# Create a set of launching angles to try out.
-#theta_0 = range(0, 20, 5) # Launch angle in degrees
-theta_0 = [0, 0, 15, 15]
-beta_0 = [0, 10, 0, 10]
-
-def getAcc(v_x, v_y, m, beta, rho, A):
-	theta = math.atan(v_y/v_x)
-	#print(theta*180/math.pi)
-	AEFORCES = AerodynamicForces(v_x, v_y, theta, beta, rho, A, m)
-	Ay = (1 / m) * (-m*g + AEFORCES.lift()['y']*math.cos(theta) - AEFORCES.drag()['y']*math.sin(theta))
-	Ax = (1 / m) * (-AEFORCES.lift()['x']*math.sin(theta) - AEFORCES.drag()['x']*math.cos(theta))
-	return [Ax,  Ay]
-
-
-def GetFrisbeeTraj(x_0,y_0,v_0, theta_0, beta, m, A, rho, STEPS):
-    vx_0 = v_0 * math.cos(math.radians(theta_0))
-    vy_0 = v_0 * math.sin(math.radians(theta_0))
-
-    x = [x_0]
-    y = [y_0]
-    vx = [vx_0]
-    vy = [vy_0]
+    @staticmethod
+    def optimize(theta_range, beta_range, g, DT, T_MAX, STEPS, rho, r, A, m, x_0, y_0, v_0):
+        return optimize(g, DT, T_MAX, STEPS, rho, r, A, m, x_0, y_0, v_0, theta_range, beta_range)
     
-    acceleration = getAcc(vx[0], vy[0], m, beta, rho, A)
-    
-    ax = [acceleration[0]]
-    ay = [acceleration[1]]
+    @staticmethod
+    def plot_3d(x_0, y_0, v_0, g, rho, r, A, m, DT, T_MAX, STEPS):
+        return _3d_plotter(x_0, y_0, v_0, g, rho, r, A, m, DT, T_MAX, STEPS)        
 
-    for i in range(0, STEPS):
-        x.append(x[i] + vx[i] * DT)
-        y.append(y[i] + vy[i] * DT)
-
-        vx.append(vx[i] + ax[i]*DT)
-        vy.append(vy[i] + ay[i]*DT)
+    @staticmethod
+    def get_trajectory(theta_0, beta_0, v_0, y_0, x_0, m, A, rho, STEPS, print_results = True, graphDim = [], max_coord = [], min_coord = [], show_graph = True):
+        if isinstance(theta_0, list) and isinstance(beta_0, list):
+            if len(theta_0) != len(beta_0):
+                raise ValueError("The number of elements in theta_0 and beta_0 must be equal.")
+        else:
+            raise ValueError("theta_0 and beta_0 must be lists.")
         
-        ax.append(getAcc(vx[-1], vy[-1], m, beta, rho, A)[0])
-        ay.append(getAcc(vx[-1], vy[-1], m, beta, rho, A)[1])
+        prevHigh = [0, 0, 0]
+        prevMin = [0, 0, 0]
+        trajectory_data = []
 
-        if y[-1] <= 0:
-            break
+        for index, angle in enumerate(theta_0):
+            x, y = GetFrisbeeTraj(x_0, y_0, v_0, angle, beta_0[index], m, A, rho, STEPS)
+            trajectory_data.append((x, y))
+            if abs(x[-1]) > prevHigh[1]:
+                prevHigh[0] = angle
+                prevHigh[1] = abs(x[-1])
+            if abs(y[-1]) > prevHigh[2]:
+                prevHigh[2] = abs(y[-1])
+        
+            if abs(x[-1]) < prevMin[1]:
+                prevMin[0] = angle
+                prevMin[1] = abs(x[-1])
+            if abs(y[-1]) < prevMin[2]:
+                prevMin[2] = abs(y[-1])
 
-    return x, y
+        if print_results:
+            print('-----------------------------------------------------------------------------------------------------------------')
+            print(f'\nThe Frisbee was launched at an initial speed of {v_0}m/s from a height of {y_0}m at a distance of {x_0}m from the origin.')
+            print(f'The mass of the Frisbee is {m}kg with a cross-sectional area of {A}m² and a density of {rho}kg/m³.')
+            print(f'The highest range in the x axis is equal to {prevHigh[1]:.1f}m with an angle of {prevHigh[0]}°')
+            print(f'The highest height in the y axis is equal to {prevHigh[2]:.1f}m with an angle of {prevHigh[0]}°\n')
+            print('---------------------------------------------------------------------------------------------------------------------')
 
-def execute():
-  # For loop on the launching angle
+        if show_graph:
+            coord_size_x = [0, 0]
+            coord_size_y = [0, 0]
+            size_x = 0
+            size_y = 0
+            if len(max_coord) == 0 or len(min_coord) == 0:
+                print("No max coordinate values provided. Using auto dimensions.")
+                coord_size_x[1] = prevHigh[1] + 5
+                coord_size_x[0] = prevMin[1] - 5
+                coord_size_y[1] = prevHigh[2] + 2
+                coord_size_y[0] = prevMin[2]
+            elif len(min_coord) > 1 and len(max_coord) > 1:
+                coord_size_x[1] = max_coord[0]
+                coord_size_x[0] = min_coord[0]
+                coord_size_y[1] = max_coord[1]
+                coord_size_y[0] = min_coord[1]
+            else:
+                raise ValueError("Both max and min coordinates must be provided.")
+            
+            if(len(graphDim) == 0):
+                print("No graph dimensions provided. Using auto dimensions.")
+                if prevHigh[1] < 1:
+                    size_x = prevHigh[1] * (1 / prevHigh[1]) * 5
+                else:
+                    size_x = prevHigh[1] * 0.7
 
-  prevHigh = [0, 0]
+                if prevHigh[2] < 1:
+                    size_y = prevHigh[2] * (1 / prevHigh[2]) * 5
+                else:
+                    size_y = prevHigh[2]
+            else:
+                size_x = graphDim[0]
+                size_y = graphDim[1]
+            
+            plt.rcParams['figure.figsize'] = (size_x, size_y)
+            plt.figure(figsize=(size_x, size_y))
+            plt.yticks(np.arange(coord_size_y[0], coord_size_y[1], 1))
+            plt.xticks(np.arange(coord_size_x[0], coord_size_x[1], 2.5))
+            plt.xlim(coord_size_x[0], coord_size_x[1])
+            plt.ylim(coord_size_y[0], coord_size_y[1])
 
-  # Calculate the trajectory for each launching angle and add to plot
-  plt.rcParams['figure.figsize'] = (1	, 4)
-  plt.figure(figsize=(13, 4))
-  plt.yticks(np.arange(0, 4, 1))
-  plt.xticks(np.arange(-1, 22, 2.5))
-  plt.xlim(-1, 22)
-  plt.ylim(0, 4)
+            for index, (x, y) in enumerate(trajectory_data):
+                plt.plot(x, y, label=f"({theta_0[index]}\N{DEGREE SIGN}, {beta_0[index]}\N{DEGREE SIGN})  - Range={x[-1]:.1f}m")
 
-  for index, angle in enumerate(theta_0):
-    x,y = GetFrisbeeTraj(x_0,y_0,v_0,angle, beta_0[index], m, A, rho, STEPS)
-    if(x[len(x) - 1] > prevHigh[1]):
-      prevHigh[0] = angle
-      prevHigh[1] = x[len(x) - 1]
-    plt.plot(x,y,label = f"({angle}\N{DEGREE SIGN}, {beta_0[index]}\N{DEGREE SIGN})  - Range={x[-1]:.1f}m")
-  plt.legend()
-  plt.title("Effect of (\u03B8\u2080, \u03B2) on trajectory of a Frisbee for an initial speed of 12 m/s")
-  plt.xlabel("Distance (m)")
-  plt.ylabel("Height (m)")
-  plt.show()
-  print(f'The highest range in the x axis is equal to {prevHigh[1]:.1f}m with an angle of {prevHigh[0]}°')
+            plt.legend()
+            plt.title("Effect of (\u03B8\u2080, \u03B2) on trajectory of a Frisbee for an initial speed of 12 m/s")
+            plt.xlabel("Distance (m)")
+            plt.ylabel("Height (m)")
+            plt.show()        
+            
+        return trajectory_data
